@@ -1,7 +1,7 @@
 kind: Workflow
 apiVersion: argoproj.io/v1alpha1
 metadata:
-  name: pod-kill-1634507721
+  name: podkill-1634508928
   namespace: litmus
 spec:
   templates:
@@ -9,7 +9,7 @@ spec:
       steps:
         - - name: install-chaos-experiments
             template: install-chaos-experiments
-        - - name: pod-delete-30
+        - - name: pod-delete-review-30
             template: pod-delete
             arguments:
               parameters:
@@ -19,6 +19,16 @@ spec:
                   value: bookinfo
                 - name: applabel
                   value: app=reviews
+          - name: pod-delete-ratings-100-a
+            template: pod-delete
+            arguments:
+              parameters:
+                - name: percentage
+                  value: "100"
+                - name: appns
+                  value: bookinfo
+                - name: applabel
+                  value: app=ratings
         - - name: pod-delete-70
             template: pod-delete
             arguments:
@@ -29,6 +39,16 @@ spec:
                   value: bookinfo
                 - name: applabel
                   value: app=reviews
+          - name: pod-delete-ratings-100-b
+            template: pod-delete
+            arguments:
+              parameters:
+                - name: percentage
+                  value: "100"
+                - name: appns
+                  value: bookinfo
+                - name: applabel
+                  value: app=ratings
         - - name: revert-chaos
             template: revert-chaos
     - name: install-chaos-experiments
@@ -143,10 +163,6 @@ spec:
                 metadata:
                   namespace: "{{workflow.parameters.adminModeNamespace}}"
                   generateName: pod-delete
-                  labels:
-                    instance_id: a8def650-5f4d-45e3-862b-643354411b6f
-                    context: pod-delete_litmus
-                    workflow_name: custom-chaos-workflow-1634502527
                 spec:
                   appinfo:
                     appns: "{{inputs.parameters.appns}}"
@@ -179,7 +195,6 @@ spec:
         args:
           - -file=/tmp/chaosengine-pod-delete.yaml
           - -saveName=/tmp/engine-name
-
     - name: revert-chaos
       container:
         name: ""
